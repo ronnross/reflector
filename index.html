@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test app</title>
+</head>
+<body>
+  <div id="app"></div>
+  <button id="button" type="button">Click me</button>
+  <script src="reflector.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/codemirror.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/codemirror.js"></script>
+  <script>
+    var app = Elm.Main.embed(document.getElementById('app'));
+  </script>
+  <script>
+      app.ports.words.subscribe(function(word) {
+        console.log(word);        
+      });
+
+      // do stuff with code mirror maybe with port idk
+      
+  </script>
+</body>
+</html>
