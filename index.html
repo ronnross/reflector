@@ -11,15 +11,17 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/codemirror.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/codemirror.js"></script>
   <script>
-    var app = Elm.Main.embed(document.getElementById('app'));
+    var app = Elm.Spelling.embed(document.getElementById('app'));
   </script>
   <script>
-      app.ports.words.subscribe(function(word) {
-        console.log(word);        
-      });
-
-      // do stuff with code mirror maybe with port idk
-      
+    function spellCheck(word) {
+      return ["test", "more testing"];
+    }
+    app.ports.check.subscribe(function(word) {
+      console.log(word);
+      var suggestions = spellCheck(word);
+      app.ports.suggestions.send(suggestions);
+    });
   </script>
 </body>
 </html>

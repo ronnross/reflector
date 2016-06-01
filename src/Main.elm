@@ -1,62 +1,71 @@
-port module Main exposing (..)
+port module Spelling exposing (..)
 
 import Html exposing (..)
 import Html.App as Html
-import Html.Events exposing (onClick)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
+import String
+
 
 main =
-  Html.beginnerProgram
-    { model = model
+  Html.program
+    { init = init
     , view = view
     , update = update
+    , subscriptions = subscriptions
     }
-    
+
+
+-- MODEL
 
 type alias Model =
-    { counter: Int
-    , words: String
-    }    
-    
-    
-model =
-    { counter = 0
-    , words = ""
-    }
-    
-type Msg 
-    = Dec 
-    | Inc
-    | Words String
- 
- 
-port words : String -> Cmd msg
+  { word : String
+  , suggestions : List String
+  }
+
+init : (Model, Cmd Msg)
+init =
+  (Model "" [], Cmd.none)
 
 
--- update : Msg -> Model -> (Model, Cmd Msg)
-update msg model =
-  case msg of
-    Inc ->
-      ({ model | 
-            counter = model.counter + 1
-            , words = "bar" }, Cmd.none )
+-- UPDATE
 
-    Dec ->
-      ({ model | 
-            counter = model.counter - 1
-            , words = "foo" }, Cmd.none)
-      
-    Words wrds ->
-        (model, words model.words)
+type Msg
+  = Change String
+  | Check
+  | Suggest (List String)
 
-        
-        
-            
 
+port check : String -> Cmd msg
+
+update : Msg -> Model -> (Model, Cmd Msg)
+update action model =
+  case action of
+    Change newWord ->
+      ( Model newWord [], Cmd.none )
+
+    Check ->
+      ( model, check model.word )
+
+    Suggest newSuggestions ->
+      ( Model model.word newSuggestions, Cmd.none )
+
+
+-- SUBSCRIPTIONS
+
+port suggestions : (List String -> msg) -> Sub msg
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  suggestions Suggest
+
+
+-- VIEW
+
+view : Model -> Html Msg
 view model =
   div []
-    [ button [ onClick Dec ] [ text "-" ]
-    , div [] [ text (toString model) ]
-    , button [ onClick Inc ] [ text "+" ]
-    , div [] [ text model.words ]
-    ]   
+    [ input [ onInput Change ] []
+    , button [ onClick Check ] [ text "Check" ]
+    , div [] [ text (String.join ", " model.suggestions) ]
+    ]
